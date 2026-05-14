@@ -7,29 +7,85 @@
     <div v-else-if="errorMessage" class="p-10 text-center text-red-500 font-bold">
       {{ errorMessage }}
     </div>
+    <div v-else-if="tickets">
+      <div class="p-3 mx-auto w-full">
+        <div class="flex flex-row justify-between items-center">
 
-    <div class="p-3 mx-auto w-full">
+          <button
+              class="h-12 px-5 flex items-center justify-center text-base text-gray-50 font-bold bg-violet-900 rounded-xl transition duration-150 hover:bg-violet-700">
+            <router-link to="/create/ticket" class="flex items-center h-full">Stwórz Zgłoszenie</router-link>
+          </button>
+
+          <div class="flex flex-row gap-2 items-center">
+
+            <div
+                class="h-12 flex items-center w-full max-w-sm bg-gray-100 rounded-xl border border-gray-300 focus-within:ring-2 focus-within:ring-offset-violet-900 focus-within:border-violet-900 overflow-hidden">
+              <input type="text" placeholder="Szukaj..." v-model="searchQuery"
+                     @keyup.entery="fetchTickets(1)"
+                     class="h-full w-full pl-4 pr-2 bg-transparent border-none outline-none focus:ring-0 text-base"/>
+              <button
+                  @click="fetchTickets(1)"
+                  class="p-3 rounded-xl text-gray-500 transition-all duration-300 hover:bg-violet-600 hover:text-white outline-none"
+              >
+                <MagnifyingGlassIcon class="w-6 h-6" />
+              </button>
+
+            </div>
+
+            <USelectMenu
+                @update:model-value="changeSorting"
+                :ui="{
+                  content: ['p-3 mt-1 w-full text-gray-50 font-bold bg-violet-900 rounded-xl'],
+                  item: ['px-4 py-2 text-white text-center transition duration-50 data-highlighted:not-data-disabled:bg-violet-700'],
+                  base: ['!justify-center', '!h-12', '!flex', '!items-center']
+                }"
+                class="h-12 w-48 text-base text-center font-bold bg-violet-900 rounded-xl transition duration-150 hover:bg-violet-700 text-white"
+                :search-input="false" v-model="value" placeholder="Sortuj po..." :items="itemsSorting">
+            </USelectMenu>
+
+            <button
+                type="button"
+                class="h-12 w-12 flex items-center justify-center text-gray-50 font-bold bg-violet-900 rounded-xl transition duration-150 hover:bg-violet-700"
+                @click="sortDesc = !sortDesc">
+              <chevron-down-icon v-if="sortDesc" class="w-6 h-6"/>
+              <chevron-up-icon v-else class="w-6 h-6"/>
+            </button>
+
+          </div>
+        </div>
+      </div>
+
       <ul class="space-y-4">
         <li
             v-for="ticket in tickets"
             :key="ticket.id"
-            class="bg-white pt-4 p-0 rounded-xl border border-gray-200 shadow-sm hover:shadow-md hover:bg-violet-100 transition "
+            class="bg-white pt-4 p-0 mx-2 rounded-xl border border-gray-200 shadow-sm hover:shadow-md hover:bg-violet-100 transition "
         >
-          <router-link :to="{name: 'UserTicket', params: {id: ticket.id}}" class="block">
+
+          <router-link :to="{name: 'Ticket', params: {id: ticket.id}}" class="block">
             <div class="flex justify-between items-center border-b border-b-gray-200 gap-4 mb-3 px-2">
               <h3 class="font-semibold items-center text-lg text-gray-900">
                 {{ ticket.title }}
               </h3>
 
               <div class="flex gap-2 shrink-0">
-            <span
-                :class="['px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide border', getPriorityColor(ticket.priority)]">
-              {{ ticket.priority }}
-            </span>
+
+                <button v-if="ticket.user_id == currentUserId"
+                        @click.prevent="onClickDelete(ticket)"
+                        class="group p-1 border border-transparent rounded-lg hover:border-red-600 transition duration-100">
+                  <TrashIcon class="text-gray-700 w-5 h-5 group-hover:text-red-600 transition duration-100"/>
+                </button>
+
+                <span
+                    :class="['px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide border', getPriorityColor(ticket.priority)]">
+                  {{ ticket.priority }}
+                </span>
+
                 <span
                     :class="['px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide border', getStatusColor(ticket.status)]">
-              {{ ticket.status }}
-            </span>
+                  {{ ticket.status }}
+                </span>
+
               </div>
             </div>
 
@@ -39,16 +95,45 @@
 
             <div
                 class="bg-gray-100 px-5 sm:px-6 py-3 border-t border-gray-50 flex items-center justify-between text-xs text-gray-500 font-medium">
-            <span class="text-sm text-gray-900">
-              {{ ticket.user.name }}
-            </span>
+
+                <span class="text-sm text-gray-900">
+                  {{ ticket.user.name }}
+                </span>
+
               <div>
                 {{ formatDate(ticket.created_at) }}
               </div>
+
             </div>
           </router-link>
         </li>
       </ul>
+
+
+      <div v-if="totalTickets > 0"
+           class="mt-2 flex flex-col sm:flex-row justify-between items-center bg-white p-4 border rounded-lg shadow-sm gap-4">
+
+        <div class="text-sm text-gray-700">
+          Znaleziono: <span class="font-bold">{{ totalTickets }}</span> twoich zgłoszeń
+          <span class="text-sm text-gray-500">Strona {{ currentPage }} z {{ lastPage }}</span>
+        </div>
+
+        <div class="flex gap-2">
+          <button
+              @click="goToPrevPage"
+              :disabled="currentPage === 1"
+              class="p-1 text-sm border border-b-gray-400 rounded-xl hover:bg-gray-200 transition duration-75 disabled:opacity-50 disabled:cursor-not-allowed">
+            &lAarr; Poprzednia
+          </button>
+
+          <button
+              @click="goToNextPage"
+              :disabled="currentPage === lastPage"
+              class="p-1 text-sm border border-b-gray-400 rounded-xl hover:bg-gray-200 transition duration-75 disabled:opacity-50 disabled:cursor-not-allowed">
+            Następna &rAarr;
+          </button>
+        </div>
+      </div>
     </div>
 
     <footer class="w-full text-center p-6 text-sm text-gray-500">
@@ -58,50 +143,39 @@
 </template>
 
 <script setup>
-import {onMounted, ref, computed} from 'vue';
+import {onMounted, ref, watch} from 'vue';
+import {getStatusColor, getPriorityColor, formatDate, handleDeleteTicket} from "../../utils/ticket.js";
+import {ChevronUpIcon, ChevronDownIcon, MagnifyingGlassIcon, TrashIcon} from '@heroicons/vue/24/outline';
 import {getCookie} from "../../utils/auth.js";
-import {getStatusColor, getPriorityColor, formatDate, deleteTicketApi} from "../../utils/ticket.js";
+import {useTicketList, itemsSorting} from "../../composables/useTicketList.js";
 
-const isLoading = ref(true);
-const tickets = ref([]);
-const errorMessage = ref('');
+const {
+  tickets, fetchTickets, sortDesc, sortBy, searchQuery,
+  currentPage, lastPage, totalTickets, isLoading, errorMessage, goToNextPage, goToPrevPage
+} = useTicketList();
 
-const fetchTickets = async () => {
-  const token = getCookie('auth_token');
+const currentUserId = ref(getCookie('current_user_id'));
 
-  if (!token) {
-    errorMessage.value = 'No token provided';
-    isLoading.value = false;
-    return;
-  }
+const value = ref(itemsSorting[1]);
 
-  try {
-    const response = await fetch('https://zgrzyt-anfebba8dtfdcrd8.polandcentral-01.azurewebsites.net/api/tickets', {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      }
-    });
+const changeSorting = (option) => {
+  sortBy.value = option.value;
+}
 
-    const data = await response.json();
+const onClickDelete = async (ticket) => {
+  const success = await handleDeleteTicket(ticket, ticket.id)
 
-    if (!response.ok) {
-      errorMessage.value = response.message;
-      return
-    }
-
-    tickets.value = data.data ? data.data : data;
-    console.log(tickets.value);
-  } catch (error) {
-    errorMessage.value = error.message;
-  } finally {
-    isLoading.value = false;
+  if(success){
+    alert('Usunięto poprawnie');
+    await fetchTickets(1);
   }
 }
 
+watch([sortBy, sortDesc, searchQuery], () => {
+  fetchTickets(1)
+})
+
 onMounted(() => {
-  fetchTickets();
+  fetchTickets(1);
 });
 </script>

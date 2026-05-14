@@ -1,3 +1,4 @@
+import {apiFetch} from "./apiFetch.js";
 import {getCookie} from "./auth.js";
 
 export const getStatusColor = (status) => {
@@ -49,22 +50,48 @@ export const formatTimeMessageOver1DayLong = (dateString) => {
     })
 }
 
-export const deleteTicketApi = async (ticketId) => {
-    const token = getCookie('auth_token');
+export const handleDeleteTicket = async (ticketData, ticketId, router = null) => {
+    const currentUserId = getCookie('current_user_id');
+    const currentUserRole = getCookie('current_user_role');
 
-    const response = await fetch(`https://zgrzyt-anfebba8dtfdcrd8.polandcentral-01.azurewebsites.net/api/tickets/${ticketId}`, {
-        method: 'DELETE',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-        },
-    });
+    if(!ticketData) return false;
 
-    if (!response.ok) {
-        const data = await response.json().catch(() => ({}));
-        throw new Error(data.message || 'Nie udało się usunąć zgłoszenia.');
+    if(currentUserRole === 'user') {
+        if (!ticketData.user_id || ticketData.user_id != currentUserId) {
+            alert('Nie możesz usunąć tego zgłoszenia');
+            return false;
+        }
+
+    }else {
+        if (!ticketData.assigned_to || ticketData.assigned_to.id != currentUserId) {
+            alert('Nie możesz usunąć tego zgłoszenia');
+            return false;
+        }
     }
 
-    return true;
+    if (!confirm('Czy napewno chcesz usunąć to zgłoszenie?')) {
+        return false;
+    }
+
+    try {
+        const response = await apiFetch(`/api/tickets/${ticketId}`, {
+            method: 'DELETE',
+        });
+
+        if (!response.ok) {
+            const data = await response.json().catch(() => ({}));
+            throw new Error(data.message || 'Nie udało się usunąć zgłoszenia.');
+        }
+
+        console.log('Usunięto pomyślnie');
+
+        if(router){
+            router.push('/it/tickets');
+        }
+    } catch (error) {
+        errorMessage.value = error.message;
+    }
 }
+
+
+

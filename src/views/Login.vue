@@ -98,16 +98,13 @@
 <script setup>
 import { ref } from 'vue';
 import {useRouter} from 'vue-router';
-import {logout} from "../utils/auth.js";
 
-// Zmienne reaktywne
 const username = ref('');
 const password = ref('');
 const errorMessage = ref('');
 const isLoading = ref(false);
 const router = useRouter();
 
-// Funkcja pomocnicza do zapisu ciasteczka
 const setCookie = (name, value, days) => {
   const date = new Date();
   date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
@@ -115,9 +112,7 @@ const setCookie = (name, value, days) => {
   document.cookie = `${name}=${value};${expires};path=/;SameSite=Strict`;
 };
 
-// Logika logowania
 const handleLogin = async () => {
-  // Prosta walidacja przed strzałem
   if (!username.value || !password.value) {
     errorMessage.value = 'Wypełnij login i hasło.';
     return;
@@ -127,7 +122,7 @@ const handleLogin = async () => {
   errorMessage.value = '';
 
   try {
-    const response = await fetch('https://zgrzyt-anfebba8dtfdcrd8.polandcentral-01.azurewebsites.net/api/login', {
+    const response = await fetch('https://zgrzyt-api.onrender.com/api/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -145,7 +140,7 @@ const handleLogin = async () => {
       return;
     }
 
-    const getId = await fetch('https://zgrzyt-anfebba8dtfdcrd8.polandcentral-01.azurewebsites.net/api/user', {
+    const getId = await fetch('https://zgrzyt-api.onrender.com/api/user', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -166,7 +161,6 @@ const handleLogin = async () => {
     setCookie('current_user_id', userData.id, 7);
     setCookie('current_user_name', userData.name, 7);
     setCookie('current_user_role', userData.role, 7);
-    //todo przy logowaniu różne view dla usera i dla it/admin
     if(data.role !== 'user'){
       router.push('/it/tickets')
     }else router.push("/tickets");
@@ -174,7 +168,6 @@ const handleLogin = async () => {
 
   } catch (error) {
     console.error('Błąd:', error);
-    // Tutaj na 99% wpadnie błąd CORS dopóki kumpel go nie naprawi
     errorMessage.value = 'Błąd połączenia. Upewnij się, że backend działa i CORS jest odblokowany.';
   } finally {
     isLoading.value = false;
@@ -183,7 +176,6 @@ const handleLogin = async () => {
 </script>
 
 <style scoped>
-/* Prosta animacja pojawiania się błędu */
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.3s ease, transform 0.3s ease;

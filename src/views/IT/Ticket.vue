@@ -24,18 +24,22 @@
               :class="['px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide border', getPriorityColor(ticket.priority)]">
             {{ ticket.priority }}
           </span>
+
           <span
               :class="['px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide border', getStatusColor(ticket.status)]">
             {{ ticket.status }}
           </span>
-          <button @click="handleDeleteTicket"
+
+          <button @click="onClickDelete"
                   class="group p-1 border border-transparent rounded-lg hover:border-red-600 transition duration-100">
             <TrashIcon class="text-gray-700 w-5 h-5 group-hover:text-red-600 transition duration-100"/>
           </button>
         </div>
       </div>
+
       <div class="flex flex-row shrink-0 justify-between">
         <div class="flex flex-col px-6 py-4 text-gray-700 leading-relaxed">
+
           <p class="text-m text-gray-700 font-bold">
             Opis: <span class="text-gray-500 text-m">{{ ticket.description }}</span>
           </p>
@@ -47,10 +51,13 @@
           <p class="text-gray-700 font-bold">
             Przypisane do: <span v-if="ticket.assigned_to"
                                  class="text-gray-500 text-sm">{{ ticket.assigned_to.name }}</span>
+
             <span v-else class="text-gray-500 text-sm">Nikogo</span>
           </p>
         </div>
+
         <div class="flex flex-col items-center-safe px-6 py-4 shrink-0 text-gray-700 leading-relaxed">
+
           <button @click="assignToCurrentUser" v-if="!ticket.assigned_to"
                   class=" p-3 mt-1 w-full text-gray-50 font-bold bg-violet-900 rounded-xl transition duration-150 hover:bg-violet-700">
             Przypisz do mnie
@@ -64,7 +71,6 @@
           <div v-else class="p-3 mt-1 w-full text-gray-50 font-bold text-center bg-violet-900 rounded-xl">
             Przypisane do: <span class="text-sm font-normal">{{ ticket.assigned_to.name }}</span>
           </div>
-
 
           <USelectMenu
               v-if="ticket.assigned_to && ticket.assigned_to.id == currentUserId && ticket.status !== 'zamknięte'"
@@ -83,11 +89,14 @@
           </button>
         </div>
       </div>
+
       <div class="bg-gray-50 px-6 py-4 border-t border-gray-100 flex items-center justify-between text-xs
        text-gray-500 font-medium">
+
         <span class="text-sm font-semibold text-gray-900 flex items-center gap-2">
           {{ ticket.user.name }}
         </span>
+
         <div>
           {{ formatDate(ticket.created_at) }}
         </div>
@@ -100,10 +109,8 @@
           Wiadomości z {{ ticket.user.name }}
         </div>
 
-
         <div ref="chatBox" v-if="ticket.messages"
              class="custom-scroll flex flex-col w-4/5 bg-gray-100 rounded-xl flex-1 min-h-0 overflow-y-auto mt-4">
-
 
           <div v-for="message in ticket.messages.slice().reverse()"
                :key="message.id"
@@ -124,7 +131,9 @@
             </div>
           </div>
         </div>
+
         <div class="flex shrink-0 items-end w-full p-4 bg-white border-t border-gray-200 gap-3">
+
           <textarea
               v-if="ticket.assigned_to?.id == currentUserId"
               ref="messageInput"
@@ -160,7 +169,9 @@ import {onMounted, ref, watch} from 'vue';
 import {useRoute, useRouter} from 'vue-router';
 import {getCookie} from "../../utils/auth.js";
 import {TrashIcon} from "@heroicons/vue/24/outline";
-import {getStatusColor, getPriorityColor, formatDate, formatDateMessage, deleteTicketApi} from "../../utils/ticket.js";
+import {getStatusColor, getPriorityColor, formatDate, formatDateMessage, handleDeleteTicket} from "../../utils/ticket.js";
+import {useWebSocket} from "@vueuse/core";
+import {apiFetch} from "../../utils/apiFetch.js";
 
 const currentUserId = getCookie('current_user_id');
 
@@ -212,22 +223,9 @@ const value = ref(itemsPriority[2]);
 
 
 const fetchTicket = async () => {
-  const token = getCookie('auth_token');
-
-  if (!token) {
-    errorMessage.value = 'Brak tokena!';
-    isLoading.value = false;
-    return;
-  }
-
   try {
-    const response = await fetch(`https://zgrzyt-anfebba8dtfdcrd8.polandcentral-01.azurewebsites.net/api/tickets/${route.params.id}`, {
+    const response = await apiFetch(`/api/tickets/${route.params.id}`, {
       method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      }
     });
 
     const data = await response.json();
@@ -235,7 +233,6 @@ const fetchTicket = async () => {
     if (!response.ok) {
       if(response.status === 401) {
         alert("Token wygasł zaloguj się ponownie")
-        router.push('/login');
       }
       errorMessage.value = data.message || "Błąd pobierania danych z serwera";
       return;
@@ -250,40 +247,21 @@ const fetchTicket = async () => {
   }
 }
 
-const handleDeleteTicket = async () => {
-  if(!ticket.value || !ticket.value.assigned_to || ticket.value.assigned_to.id != currentUserId){
-    alert('Nie możesz usunąć tego zgłoszenia');
-    return;
-  }
+const onClickDelete = async () => {
+  const success = await handleDeleteTicket(ticket.value, route.params.id, router);
 
-  if(!confirm('Czy napewno chcesz usunąć to zgłoszenie?')) {
-    return;
-  }
-
-  try{
-    await deleteTicketApi(route.params.id);
-
-    console.log('Usunięto pomyślnie');
-
-    router.push('/it/tickets');
-  }catch (error){
-    errorMessage.value = error.message;
-  }
+  if(success){
+    alert('Usunięto poprawnie')
+  }else alert('Wystąpił błąd: ', errorMessage.value)
 }
 
 const assignToCurrentUser = async () => {
-  const token = getCookie('auth_token');
 
   if (!ticket.value || ticket.value.assigned_to) return null;
 
   try {
-    const response = await fetch(`https://zgrzyt-anfebba8dtfdcrd8.polandcentral-01.azurewebsites.net/api/tickets/${route.params.id}`, {
+    const response = await apiFetch(`/api/tickets/${route.params.id}`, {
       method: 'PUT',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
       body: JSON.stringify({
         status: 'w trakcie',
         assigned_it_id: currentUserId
@@ -305,7 +283,6 @@ const assignToCurrentUser = async () => {
 }
 
 const removeFromCurrentUser = async () => {
-  const token = getCookie('auth_token');
 
   if (!ticket.value.assigned_to.id == currentUserId) {
     console.log('Ticket nie należy do ciebie')
@@ -313,13 +290,8 @@ const removeFromCurrentUser = async () => {
   }
 
   try {
-    const response = await fetch(`https://zgrzyt-anfebba8dtfdcrd8.polandcentral-01.azurewebsites.net/api/tickets/${route.params.id}`, {
+    const response = await apiFetch(`/api/tickets/${route.params.id}`, {
       method: 'PUT',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
       body: JSON.stringify({
         status: 'nowe',
         assigned_it_id: null
@@ -341,18 +313,12 @@ const removeFromCurrentUser = async () => {
 }
 
 const endTicket = async () => {
-  const token = getCookie('auth_token');
 
   if (!ticket.value || !ticket.value.assigned_to || ticket.value.assigned_to.id != currentUserId) return null;
 
   try {
-    const response = await fetch(`https://zgrzyt-anfebba8dtfdcrd8.polandcentral-01.azurewebsites.net/api/tickets/${route.params.id}`, {
+    const response = await apiFetch(`/api/tickets/${route.params.id}`, {
       method: 'PUT',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
       body: JSON.stringify({
         status: 'zamknięte'
       })
@@ -373,16 +339,9 @@ const endTicket = async () => {
 }
 
 const changePriority = async (option_chosen) => {
-  const token = getCookie('auth_token');
-
   try {
-    const response = await fetch(`https://zgrzyt-anfebba8dtfdcrd8.polandcentral-01.azurewebsites.net/api/tickets/${route.params.id}`, {
+    const response = await apiFetch(`/api/tickets/${route.params.id}`, {
       method: 'PUT',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
       body: JSON.stringify({
         priority: option_chosen.value
       })
@@ -403,18 +362,12 @@ const changePriority = async (option_chosen) => {
 }
 
 const sendMessage = async () => {
-  const token = getCookie('auth_token');
 
   if (!newMessage.value.trim()) return null;
 
   try {
-    const response = await fetch(`https://zgrzyt-anfebba8dtfdcrd8.polandcentral-01.azurewebsites.net/api/tickets/${route.params.id}/messages`, {
+    const response = await apiFetch(`/api/tickets/${route.params.id}/messages`, {
       method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
       body: JSON.stringify({
         body: newMessage.value
       })
@@ -435,7 +388,6 @@ const sendMessage = async () => {
     errorMessage.value = error.message;
   }
 }
-
 
 onMounted(() => {
   fetchTicket();

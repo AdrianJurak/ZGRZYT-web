@@ -4,6 +4,7 @@ import ITTicketList from '../views/IT/TicketList.vue'
 import UserTicketList from '../views/User/TicketList.vue'
 import ITTicket from '../views/IT/Ticket.vue'
 import UserTicket from '../views/User/Ticket.vue'
+import CreateUser from "../views/IT/CreateUser.vue";
 
 const routes = [
     {
@@ -30,6 +31,11 @@ const routes = [
         path: '/tickets/:id',
         name: 'UserTicket',
         component: UserTicket
+    },
+    {
+        path: '/it/user/create',
+        name: 'CreateUser',
+        component: CreateUser
     }
 ]
 
