@@ -24,6 +24,7 @@ declare module 'vue' {
     FormButton: typeof import('./src/components/atoms/FormButton.vue')['default']
     FormLayout: typeof import('./src/components/layouts/FormLayout.vue')['default']
     HorizontalOptionsList: typeof import('./src/components/molecules/HorizontalOptionsList.vue')['default']
+    LangSwitcher: typeof import('./src/components/atoms/LangSwitcher.vue')['default']
     ListLayout: typeof import('./src/components/layouts/ListLayout.vue')['default']
     ListRouterLinksToItems: typeof import('./src/components/molecules/ListRouterLinksToItems.vue')['default']
     ListRouterLInkToItem: typeof import('./src/components/molecules/ListRouterLInkToItem.vue')['default']

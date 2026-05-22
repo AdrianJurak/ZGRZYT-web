@@ -24,15 +24,15 @@ defineEmits(['next-page', 'prev-page']);
     <Loading v-if="isLoading" class="mt-5"></Loading>
 
     <main v-else class="flex-1 flex flex-col">
-      <div class="p-3 md:px-6 md:py-4 mx-auto w-full max-w-7xl">
+      <div class="p-3 md:px-2 md:py-4 w-full mx-auto">
 
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-0">
+        <div class="flex flex-col xl:flex-row justify-between items-stretch xl:items-center gap-4">
 
-          <div class="flex flex-row gap-2 items-center w-full md:w-auto">
+          <div class="flex flex-row gap-2 items-center w-full xl:w-auto shrink-0">
             <slot name="action-button"></slot>
           </div>
 
-          <div class="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center w-full md:w-auto">
+          <div class="flex flex-col xl:flex-row gap-2 items-stretch xl:items-center w-full xl:w-auto">
             <slot name="toolbar"></slot>
           </div>
 
@@ -63,7 +63,7 @@ defineEmits(['next-page', 'prev-page']);
   </div>
 
   <div v-else class="custom-scroll text-center min-h-screen bg-gray-50 flex flex-col font-sans text-gray-900 overflow-auto justify-center p-4">
-    <h1 class="text-xl md:text-2xl font-bold text-red-900">You're not supposed to be here.</h1>
+    <h1 class="text-xl md:text-2xl font-bold text-red-900">{{ $t('listLayout.unauthorized') }}</h1>
   </div>
 </template>
 

@@ -51,10 +51,10 @@ const save = () => {
             @keyup.enter="save"
         />
         <button @click="save" class="px-4 py-1.5 bg-violet-700 text-white font-semibold rounded-lg hover:bg-violet-800 transition shadow-sm shrink-0">
-          Zatwierdź
+          {{ $t('ticketNameCard.confirm') }}
         </button>
         <button @click="toggleTitle" class="px-4 py-1.5 bg-white border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition shadow-sm shrink-0">
-          Anuluj
+          {{ $t('ticketNameCard.cancel') }}
         </button>
       </div>
     </div>

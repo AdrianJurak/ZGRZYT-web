@@ -6,7 +6,9 @@ import { useToast } from "../../composables/useToast.js";
 import FormButton from "../../components/atoms/FormButton.vue";
 import HorizontalOptionsList from "../../components/molecules/HorizontalOptionsList.vue";
 import BaseInput from "../../components/atoms/BaseInput.vue";
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const authStore = useAuthStore();
 const { showToast } = useToast();
 
@@ -22,21 +24,19 @@ const userRole = ref('user');
 const currentUserRole = computed(() => authStore.user?.role);
 
 const availableRoles = computed(() => {
-  if (currentUserRole.value === 'admin') {
-    return [
-      { label: 'User', value: 'user' },
-      { label: 'IT', value: 'it' },
-      { label: 'Administrator', value: 'admin' }
-    ];
-  }
-  return [
-    { label: 'User', value: 'user' },
-    { label: 'IT', value: 'it' }
+  const roles = [
+    { label: t('createUser.roles.user'), value: 'user' },
+    { label: t('createUser.roles.it'), value: 'it' }
   ];
+
+  if (currentUserRole.value === 'admin') {
+    roles.push({ label: t('createUser.roles.admin'), value: 'admin' });
+  }
+  return roles;
 });
 
 const handleFetchError = (error) => {
-  showToast(`Błąd: ${error.response?.data?.message || error.message}`, 'error');
+  showToast(t('createUser.errorPrefix') + (error.response?.data?.message || error.message), 'error');
 };
 
 const createUser = async () => {
@@ -52,7 +52,7 @@ const createUser = async () => {
     });
 
     if (response.status === 201 || response.status === 200) {
-      showToast('Utworzono użytkownika.', 'success');
+      showToast(t('createUser.success'), 'success');
     }
   } catch (error) {
     handleFetchError(error);
@@ -61,32 +61,32 @@ const createUser = async () => {
   }
 };
 </script>
+
 <template>
   <FormLayout
       :canView="currentUserRole !== 'user'"
       backTo="/it/tickets"
-      title="Stwórz użytkownika">
+      :title="$t('createUser.title')">
 
     <template #inputs>
-      <BaseInput id="name" label="Imię" autocomplete="name" v-model="name" type="text" placeholder="Jan Kowalski"/>
+      <BaseInput id="name" :label="$t('createUser.labels.name')" autocomplete="name" v-model="name" type="text" :placeholder="$t('createUser.placeholders.name')"/>
 
-      <BaseInput id="login" label="Login" autocomplete="username" v-model="login" type="text" placeholder="jKowalski"/>
+      <BaseInput id="login" :label="$t('createUser.labels.login')" autocomplete="username" v-model="login" type="text" :placeholder="$t('createUser.placeholders.login')"/>
 
-      <BaseInput id="email" label="E-mail" autocomplete="email" v-model="email" type="email" placeholder="example@email.com"/>
+      <BaseInput id="email" :label="$t('createUser.labels.email')" autocomplete="email" v-model="email" type="email" :placeholder="$t('createUser.placeholders.email')"/>
 
-      <BaseInput id="password" label="Hasło" autocomplete="password" v-model="password" type="password" placeholder="hasło"/>
+      <BaseInput id="password" :label="$t('createUser.labels.password')" autocomplete="password" v-model="password" type="password" :placeholder="$t('createUser.placeholders.password')"/>
 
-      <BaseInput id="passwordConfirm" label="Potwierdź hasło" v-model="passwordConfirm" type="password" placeholder="wpisz hasło..."/>
+      <BaseInput id="passwordConfirm" :label="$t('createUser.labels.passwordConfirm')" v-model="passwordConfirm" type="password" :placeholder="$t('createUser.placeholders.passwordConfirm')"/>
 
       <HorizontalOptionsList v-model="userRole" :options="availableRoles" />
 
       <FormButton
           @click="createUser"
           :isLoadingState="isLoading"
-          mainText="Stwórz użytkownika"
+          :mainText="$t('createUser.submitButton')"
       />
     </template>
 
   </FormLayout>
 </template>
-

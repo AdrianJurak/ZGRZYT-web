@@ -6,9 +6,10 @@ import {useAuthStore} from "../../stores/auth.js";
 import {handleFetchError} from "../../utils/handleFetchError.js";
 import api from "../../utils/axios.js";
 import {useToast} from "../../composables/useToast.js";
+import {useI18n} from 'vue-i18n';
 
+const { t } = useI18n();
 const {showToast} = useToast();
-
 const authStore = useAuthStore();
 
 const {
@@ -24,26 +25,21 @@ const isReady = ref(false);
 
 const value = ref(itemsSorting[1]);
 
+sortBy.value = value.value?.value || 'title';
+
 const onClickDelete = async (ticket) => {
   const isDeleted = await handleDeleteTicket(ticket, ticket.id, currentUserId.value, currentUserRole.value);
-
-  if (isDeleted) {
-    await fetchTickets(1);
-  }
+  if (isDeleted) await fetchTickets(1);
 };
 
 const loadUsers = async (page = 999) => {
   try {
     const params = new URLSearchParams();
-    if (userSearchQuery.value.trim() !== '') {
-      params.append('search', userSearchQuery.value.trim());
-    }
+    if (userSearchQuery.value.trim() !== '') params.append('search', userSearchQuery.value.trim());
     params.append('per_page', page);
 
     const response = await api.get(`/api/users?${params.toString()}`);
-    const data = response.data;
-
-    usersList.value = data.data ? data.data : data;
+    usersList.value = response.data.data ? response.data.data : response.data;
   } catch (error) {
     handleFetchError(error);
   }
@@ -60,55 +56,41 @@ const assignableUsers = computed(() => {
 
 const assignedUser = ref('')
 
-const assignTicketToUser = async (ticketId,userId) => {
+const assignTicketToUser = async (ticketId, userId) => {
   try {
-    await api.put(`/api/tickets/${ticketId}`, {
-      assigned_it_id: userId
-    });
-
-    showToast("Pomyślnie przypisano ticketa!", "success");
-
+    await api.put(`/api/tickets/${ticketId}`, { assigned_it_id: userId });
+    showToast(t('itTicketList.assignSuccess'), "success");
   } catch (error) {
-    showToast("Nie udało się przypisać", "error");
+    showToast(t('itTicketList.assignError'), "error");
   }
 };
 
 const unassignedToggle = async () => {
   unassigned.value = !unassigned.value;
   noPagination.value = !noPagination.value;
-
-  if(unassigned.value) {
-    await loadUsers();
-  }
-
+  if(unassigned.value) await loadUsers();
   await fetchTickets(1);
-
   isReady.value = unassigned.value;
 }
 
 let searchTimeout = null;
 
-watch([sortBy, sortDesc, searchQuery], () => {
-  if (searchTimeout) {
-    clearTimeout(searchTimeout);
-  }
+watch([value, sortDesc, searchQuery], () => {
+  sortBy.value = typeof value.value === 'object' && value.value !== null
+      ? value.value.value
+      : value.value;
 
-  searchTimeout = setTimeout(() => {
-    fetchTickets(1);
-  }, 300);
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(() => fetchTickets(1), 300);
 });
+
 
 onMounted(() => {
   if (!authStore.user) {
     const unwatch = watch(() => authStore.user, (newUser) => {
-      if (newUser) {
-        fetchTickets(1);
-        unwatch();
-      }
+      if (newUser) { fetchTickets(1); unwatch(); }
     });
-  } else {
-    fetchTickets(1);
-  }
+  } else fetchTickets(1);
 });
 </script>
 
@@ -117,33 +99,33 @@ onMounted(() => {
       :isLoading="isLoading"
       :hasItems="tickets && tickets.length > 0"
       :itemsLength="tickets ? tickets.length : 0"
-      emptyMessage="Brak zgłoszeń"
+      :emptyMessage="$t('itTicketList.emptyMessage')"
       :canView="currentUserRole !== 'user'"
       :total="totalTickets"
       :current="currentPage"
       :last="lastPage"
-      paginateLabel="zgłoszeń"
+      :paginateLabel="$t('itTicketList.paginateLabel')"
       @next-page="goToNextPage"
       @prev-page="goToPrevPage">
 
     <template #action-button>
-      <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-        <BaseButton class="w-full sm:w-auto justify-center">
-          <router-link to="/it/user/create" class="flex items-center justify-center h-full w-full">Stwórz Użytkownika</router-link>
+      <div class="flex flex-col sm:flex-row gap-2 w-full xl:w-auto">
+        <BaseButton class="w-full sm:flex-1 xl:flex-none xl:w-auto justify-center">
+          <router-link to="/it/user/create" class="flex items-center justify-center h-full w-full">{{ $t('itTicketList.createUser') }}</router-link>
         </BaseButton>
-        <BaseButton v-if="currentUserRole === 'admin'" class="w-full sm:w-auto justify-center">
-          <router-link to="/it/users" class="flex items-center justify-center h-full w-full">Zarządzaj użytkownikami</router-link>
+        <BaseButton v-if="currentUserRole === 'admin'" class="w-full sm:flex-1 xl:flex-none xl:w-auto justify-center">
+          <router-link to="/it/users" class="flex items-center justify-center h-full w-full">{{ $t('itTicketList.manageUsers') }}</router-link>
         </BaseButton>
       </div>
     </template>
 
     <template #toolbar>
-      <div class="flex flex-col xl:flex-row gap-2 xl:gap-4 w-full">
+      <div class="flex flex-col xl:flex-row gap-3 w-full xl:w-auto justify-end items-stretch xl:items-center">
 
-        <div class="flex flex-row gap-2 items-center justify-end w-full xl:w-auto shrink-0">
+        <div class="flex flex-row gap-2 items-center justify-center xl:justify-end w-full xl:w-auto shrink-0">
           <Loading v-if="isReady !== unassigned" text=""></Loading>
-          <BaseButton @click="unassignedToggle" class="w-full sm:w-auto justify-center shrink-0 whitespace-nowrap">
-            {{ isReady ? 'Pokaż wszystkie' : 'Pokaż nieprzypisane' }}
+          <BaseButton @click="unassignedToggle" class="w-full justify-center shrink-0 whitespace-nowrap">
+            {{ isReady ? $t('itTicketList.showAll') : $t('itTicketList.showUnassigned') }}
           </BaseButton>
         </div>
 
@@ -153,69 +135,43 @@ onMounted(() => {
             v-model:sortDesc="sortDesc"
             :itemsSorting="itemsSorting"
             @search="fetchTickets(1)"/>
-
       </div>
     </template>
 
     <template #list>
       <ListRouterLinksToItems :items="tickets" to="ItTicket">
-
         <template #top="{ item }">
-          <h3 class="font-semibold text-lg text-gray-900 break-words w-full sm:w-auto">
-            {{ item.title }}
-          </h3>
-
+          <h3 class="font-semibold text-lg text-gray-900 break-words w-full sm:w-auto">{{ item.title }}</h3>
           <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 mt-2 sm:mt-0 w-full sm:w-auto">
-
             <div v-if="isReady && item.assigned_it_id === null" @click.stop.prevent class="w-full sm:w-auto">
               <USelectMenu
                   @update:model-value="assignTicketToUser(item.id, $event.value)"
-                  :ui="{
-                    content: ['p-3 mt-1 w-full text-gray-50 font-bold bg-violet-900 rounded-xl'],
-                    item: ['px-4 py-2 text-white text-center transition duration-50 data-highlighted:not-data-disabled:bg-violet-700'],
-                    base: ['!justify-center', '!h-10', '!flex', '!items-center']
-                  }"
+                  :ui="{content: ['p-3 mt-1 w-full text-gray-50 font-bold bg-violet-900 rounded-xl'], item: ['px-4 py-2 text-white text-center transition duration-50 data-highlighted:not-data-disabled:bg-violet-700'], base: ['!justify-center', '!h-10', '!flex', '!items-center']}"
                   class="h-10 w-full sm:w-48 text-sm sm:text-base text-center font-bold bg-violet-900 rounded-xl transition duration-150 hover:bg-violet-700 [&_span]:text-white!"
                   v-model="assignedUser"
-                  placeholder="Przypisz pracownika..."
+                  :placeholder="$t('itTicketList.assignPlaceholder')"
                   :items="assignableUsers"
               />
             </div>
-
             <div class="flex justify-end">
-              <TicketBadges
-                  :ticket="item"
-                  :currentUserId="currentUserId"
-                  :currentUserRole="currentUserRole"
-                  @delete="onClickDelete"
-              />
+              <TicketBadges :ticket="item" :currentUserId="currentUserId" :currentUserRole="currentUserRole" @delete="onClickDelete" />
             </div>
-
           </div>
         </template>
-
         <template #middle="{ item }">
           <div class="flex flex-col gap-1 w-full text-sm md:text-base">
             <span class="break-words">{{ item.description }}</span>
             <span v-if="item.assigned_it_id !== null" class="flex flex-col sm:flex-row sm:gap-1 font-bold text-gray-700">
-              Przypisany do zadania: <p class="font-medium text-gray-500">{{ item.assigned_to.name }}</p>
+              {{ $t('itTicketList.assignedTo') }} <p class="font-medium text-gray-500">{{ item.assigned_to.name }}</p>
             </span>
-            <span v-else class="text-gray-500 italic">Nikt nie jest przypisany do tego zadania</span>
+            <span v-else class="text-gray-500 italic">{{ $t('itTicketList.notAssigned') }}</span>
           </div>
         </template>
-
         <template #bottom="{ item }">
-          <span class="text-sm text-gray-900 font-bold">
-            {{ item.user.name }}
-          </span>
-
-          <div class="text-xs md:text-sm">
-            {{ formatDate(item.created_at) }}
-          </div>
+          <span class="text-sm text-gray-900 font-bold">{{ item.user.name }}</span>
+          <div class="text-xs md:text-sm">{{ formatDate(item.created_at) }}</div>
         </template>
-
       </ListRouterLinksToItems>
     </template>
-
   </ListLayout>
 </template>

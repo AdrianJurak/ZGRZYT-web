@@ -1,0 +1,287 @@
+{
+  "requestAccount": {
+    "successMessage": "Utworzono zgłoszenie. Oczekuje na akceptację przez administratora",
+    "errorPrefix": "Błąd: ",
+    "defaultError": "Nie udało się wysłać zgłoszenia",
+    "title": "Poproś o utworzenie konta",
+    "backToLogin": "Wróc do ekranu logowania",
+    "labels": {
+      "name": "Imię",
+      "login": "Login",
+      "email": "E-mail",
+      "password": "Hasło",
+      "passwordConfirm": "Potwierdź hasło"
+    },
+    "placeholders": {
+      "name": "Jan Kowalski",
+      "login": "jKowalski",
+      "email": "example{'@'}email.com",
+      "password": "hasło",
+      "passwordConfirm": "wpisz hasło..."
+    },
+    "submitButton": "Stwórz zgłoszenie"
+  },
+
+  "login": {
+    "title": "Witaj ponownie",
+    "subtitle": "Zaloguj się",
+    "labels": {
+      "username": "Login",
+      "password": "Hasło"
+    },
+    "placeholders": {
+      "username": "wpisz swój login..."
+    },
+    "buttons": {
+      "submit": "Zaloguj się",
+      "loading": "Logowanie..."
+    },
+    "links": {
+      "noAccount": "Nie masz jeszcze konta? ->"
+    },
+    "validation": {
+      "empty": "Wypełnij login i hasło."
+    },
+    "error": {
+      "default": "Błąd logowania"
+    }
+  },
+
+  "userTickets": {
+    "emptyMessage": "Brak zgłoszeń",
+    "paginateLabel": "zgłoszeń",
+    "createTicket": "Stwórz Zgłoszenie"
+  },
+
+  "ticketDetailsView": {
+    "errorPrefix": "Błąd:",
+    "errorTitleSave": "Błąd podczas zapisywania tytułu",
+    "errorDescSave": "Błąd podczas zapisywania opisu"
+  },
+
+  "createTicket": {
+    "title": "Stwórz zgłoszenie",
+    "labels": {
+      "title": "Opisz krótko swój problem",
+      "description": "Dokładny opis"
+    },
+    "placeholders": {
+      "title": "Drukarka nie działa...",
+      "description": "Drukarka w pokoju 101 nie drukuje, świeci się czerwona lampka."
+    },
+    "priorities": {
+      "low": "Niski",
+      "medium": "Średni",
+      "high": "Wysoki"
+    },
+    "success": "Utworzono zgłoszenie!",
+    "errorPrefix": "Błąd:",
+    "submitButton": "Stwórz zgłoszenie"
+  },
+
+  "itTicketList": {
+    "assignSuccess": "Pomyślnie przypisano ticketa!",
+    "assignError": "Nie udało się przypisać",
+    "emptyMessage": "Brak zgłoszeń",
+    "paginateLabel": "zgłoszeń",
+    "createUser": "Stwórz Użytkownika",
+    "manageUsers": "Zarządzaj użytkownikami",
+    "showAll": "Pokaż wszystkie",
+    "showUnassigned": "Pokaż nieprzypisane",
+    "assignPlaceholder": "Przypisz pracownika...",
+    "assignedTo": "Przypisany do zadania:",
+    "notAssigned": "Nikt nie jest przypisany do tego zadania"
+  },
+
+  "itTicketView": {
+    "errorPrefix": "Błąd: ",
+    "priorityChanged": "Pomyślnie zmieniono priorytet",
+    "assigned": "Przypisano zgłoszenie",
+    "unassigned": "Wypisano ze zgłoszenia",
+    "ended": "Zgłoszenie zostało zamknięte",
+    "notOwnedError": "Zgłoszenie nie należy do Ciebie!",
+    "priorities": {
+      "high": "Wysoki",
+      "medium": "Średni",
+      "low": "Niski"
+    }
+  },
+
+  "userManagement": {
+    "errorPrefix": "Błąd: ",
+    "emptyMessage": "Brak użytkowników do wyświetlenia",
+    "paginateLabel": "użytkowników",
+    "backToTickets": "Wróć do ticketów",
+    "errors": { "passwordRequired": "Wpisz swoje hasło aby odbanować" },
+    "success": {
+      "unbanned": "Odbanowano użytkownika",
+      "banned": "Pomyślnie zbanowano użytkownika",
+      "activated": "Aktywowano użytkownika"
+    },
+    "filters": {
+      "showAll": "Pokaż wszystkich",
+      "showBanned": "Pokaż zbanowanych",
+      "activateUsers": "Aktywuj użytkowników"
+    },
+    "actions": {
+      "active": "Aktywny",
+      "activate": "Aktywuj użytkownika",
+      "unban": "Odbanuj",
+      "ban": "Zbanuj",
+      "cancel": "Anuluj"
+    },
+    "placeholders": { "password": "Wpisz hasło..." }
+  },
+
+  "createUser": {
+    "title": "Stwórz użytkownika",
+    "labels": {
+      "name": "Imię",
+      "login": "Login",
+      "email": "E-mail",
+      "password": "Hasło",
+      "passwordConfirm": "Potwierdź hasło"
+    },
+    "placeholders": {
+      "name": "Jan Kowalski",
+      "login": "jKowalski",
+      "email": "example{'@'}email.com",
+      "password": "hasło",
+      "passwordConfirm": "wpisz hasło..."
+    },
+    "roles": {
+      "user": "User",
+      "it": "IT",
+      "admin": "Administrator"
+    },
+    "success": "Utworzono użytkownika.",
+    "errorPrefix": "Błąd: ",
+    "submitButton": "Stwórz użytkownika"
+  },
+
+  "ticketUtils": {
+    "deletePermissionError": "Nie możesz usunąć tego zgłoszenia",
+    "deleteConfirm": "Czy na pewno chcesz usunąć to zgłoszenie?",
+    "deleteSuccess": "Usunięto pomyślnie",
+    "deleteError": "Nie można usunąć: "
+  },
+
+  "fetchError": {
+    "prefix": "Błąd: "
+  },
+
+  "api": {
+    "sessionExpired": "Sesja wygasła!",
+    "invalidData": "Nieprawidłowe dane",
+    "errorPrefix": "Błąd: "
+  },
+
+  "authStore": {
+    "logoutError": "Wystąpił błąd przy wylogowywaniu. "
+  },
+
+  "ticketListComposable": {
+    "errorPrefix": "Błąd: ",
+    "sort": {
+      "createdAt": "Data utworzenia",
+      "title": "Tytuł",
+      "status": "Status",
+      "priority": "Priorytet"
+    }
+  },
+
+  "toolbar": {
+    "placeholderSearch": "Szukaj...",
+    "placeholderSort": "Sortuj po..."
+  },
+
+  "ticketNameCard": {
+    "confirm": "Zatwierdź",
+    "cancel": "Anuluj"
+  },
+
+  "ticketDetails": {
+    "descriptionLabel": "Opis:",
+    "confirm": "Zatwierdź",
+    "cancel": "Anuluj",
+    "reporterLabel": "Zgłaszający:",
+    "assignedToLabel": "Przypisane do:",
+    "unassigned": "Nikogo"
+  },
+
+  "ticketControls": {
+    "assignToMe": "Przypisz do mnie",
+    "removeFromMe": "Wypisz mnie",
+    "assignedTo": "Przypisane do:",
+    "changePriorityPlaceholder": "Zmień status",
+    "endTask": "Zakończ zadanie"
+  },
+
+  "ticketChat": {
+    "messagesWith": "Wiadomości z",
+    "noItSpecialist": "Nie ma jeszcze przypisanego specjalisty it...",
+    "noMessages": "Brak wiadomości",
+    "placeholder": "Napisz wiadomość... (Shift+Enter dla nowej linii)",
+    "notAssignedWarning": "Nie jesteś przypisany do zadania i nie możesz wysyłać wiadomości",
+    "send": "Wyślij"
+  },
+
+  "pagination": {
+    "found": "Znaleziono:",
+    "your": "twoich",
+    "page": "Strona",
+    "of": "z",
+    "prev": "Poprzednia",
+    "next": "Następna"
+  },
+
+  "ticketLayout": {
+    "loadingText": "Ładowanie zgłoszenia"
+  },
+
+  "listLayout": {
+    "unauthorized": "Nie powinieneś się tutaj znaleźć."
+  },
+
+  "footer": {
+    "allRightsReserved": "Wszystkie prawa zastrzeżone."
+  },
+
+  "backButton": {
+    "defaultText": "Wróć do listy"
+  },
+
+  "statuses": {
+    "nowe": "Nowe",
+    "w trakcie": "W trakcie",
+    "zamknięte": "Zamknięte"
+  },
+  "priorities": {
+    "wysoki": "Wysoki",
+    "średni": "Średni",
+    "niski": "Niski"
+  },
+
+  "formLayout": {
+    "unauthorized": "Nie powinieneś się tutaj znaleźć."
+  },
+
+  "loading": {
+    "defaultText": "Ładowanie danych..."
+  },
+
+  "tickets": {
+    "sort": {
+      "createdAt": "Data utworzenia",
+      "priority": "Priorytet",
+      "status": "Status",
+      "title": "Tytuł"
+    }
+  },
+
+  "navbar": {
+    "logoutConfirm": "Czy na pewno chcesz się wylogować?",
+    "logout": "Wyloguj się"
+  }
+
+}

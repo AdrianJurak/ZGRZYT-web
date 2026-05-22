@@ -1,40 +1,34 @@
 import axios from 'axios';
 import { useToast } from '../composables/useToast';
+import i18n from '../i18n.js';
 
 const { showToast } = useToast();
 
 const api = axios.create({
     baseURL: import.meta.env.VITE_API_BASE_URL,
+    withCredentials: true,
     headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
     }
 });
 
-api.interceptors.request.use((config) => {
-    const token = localStorage.getItem('auth_token');
-
-    if (token && !config.skipAuth) {
-        config.headers.Authorization = `Bearer ${token}`;
-    }
-
-    return config;
-});
 
 api.interceptors.response.use(
     (response) => response,
     (error) => {
         const status = error.response?.status;
         const url = error.config?.url || '';
+        const { t } = i18n.global;
 
         if (status === 401 && !url.includes('api/login') && !url.includes('api/request-account')) {
-            localStorage.removeItem('auth_token');
             window.location.href = '/';
-            showToast('Sesja wygasła!', 'error');
+            showToast(t('api.sessionExpired'), 'error');
         }
 
         if (status === 422) {
-            showToast(`Błąd: ${error.response?.data?.message || 'Nieprawidłowe dane'}`, 'error');
+            const errorMsg = error.response?.data?.message || t('api.invalidData');
+            showToast(`${t('api.errorPrefix')}${errorMsg}`, 'error');
         }
 
         return Promise.reject(error);

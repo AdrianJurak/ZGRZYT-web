@@ -4,7 +4,9 @@ import { useRouter } from 'vue-router';
 import { useAuthStore } from '../stores/auth.js';
 import FormButton from '../components/atoms/FormButton.vue';
 import Error from '../components/atoms/Error.vue';
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const username = ref('');
 const password = ref('');
 const errorMessage = ref('');
@@ -15,7 +17,7 @@ const authStore = useAuthStore();
 
 const handleLogin = async () => {
   if (!username.value || !password.value) {
-    errorMessage.value = 'Wypełnij login i hasło.';
+    errorMessage.value = t('login.validation.empty');
     return;
   }
 
@@ -34,7 +36,9 @@ const handleLogin = async () => {
       await router.push('/it/tickets');
     }
   } catch (error) {
-    errorMessage.value = error.response?.data?.message || 'Błąd logowania';
+    // Tutaj błąd z backendu (jeśli go rzuci) nadpisze tłumaczenie,
+    // ale jako fallback mamy nasz klucz z i18n
+    errorMessage.value = error.response?.data?.message || t('login.error.default');
   } finally {
     isLoading.value = false;
   }
@@ -50,10 +54,10 @@ const handleLogin = async () => {
 
         <div class="text-center mb-10">
           <h2 class="text-3xl md:text-4xl font-extrabold text-gray-950 tracking-tight mb-2">
-            Witaj ponownie
+            {{ $t('login.title') }}
           </h2>
           <p class="text-gray-600">
-            Zaloguj się
+            {{ $t('login.subtitle') }}
           </p>
         </div>
 
@@ -61,20 +65,20 @@ const handleLogin = async () => {
 
           <div>
             <label for="username" class="block text-sm font-semibold text-gray-800 mb-2">
-              Login
+              {{ $t('login.labels.username') }}
             </label>
             <input
                 id="username"
                 v-model="username"
                 type="text"
-                placeholder="wpisz swój login..."
+                :placeholder="$t('login.placeholders.username')"
                 class="w-full px-5 py-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-violet-200 focus:border-violet-500 outline-none transition duration-150 bg-white placeholder:text-gray-400"
             />
           </div>
 
           <div>
             <label for="password" class="block text-sm font-semibold text-gray-800 mb-2">
-              Hasło
+              {{ $t('login.labels.password') }}
             </label>
             <input
                 id="password"
@@ -90,12 +94,12 @@ const handleLogin = async () => {
           <div class="pt-4">
             <FormButton @click="handleLogin"
                         :isLoadingState="isLoading"
-                        mainText="Zaloguj się"
-                        loadingText="Logowanie..."/>
+                        :mainText="$t('login.buttons.submit')"
+                        :loadingText="$t('login.buttons.loading')"/>
 
             <div class="mt-4 m-auto text-center">
               <router-link to="/request-account" class="font-medium text-sm text-violet-700">
-                Nie masz jeszcze konta? ->
+                {{ $t('login.links.noAccount') }}
               </router-link>
             </div>
           </div>

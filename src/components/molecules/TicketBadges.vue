@@ -39,11 +39,11 @@ defineEmits(['delete']);
     />
 
     <BaseBadge :colorClass="getPriorityColor(ticket.priority)">
-      {{ ticket.priority }}
+      {{ $t(`priorities.${ticket.priority}`) }}
     </BaseBadge>
 
     <BaseBadge :colorClass="getStatusColor(ticket.status)">
-      {{ ticket.status }}
+      {{ $t(`statuses.${ticket.status}`) }}
     </BaseBadge>
 
   </div>

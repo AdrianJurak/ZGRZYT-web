@@ -5,7 +5,9 @@ import { handleDeleteTicket } from "../../utils/ticket.js";
 import { useAuthStore } from "../../stores/auth.js";
 import api from "../../utils/axios.js";
 import { useToast } from "../../composables/useToast.js";
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const authStore = useAuthStore();
 const route = useRoute();
 const router = useRouter();
@@ -36,15 +38,22 @@ watch(
     }
 );
 
-const itemsPriority = [
-  { value: 'wysoki', label: 'Wysoki', class: 'bg-red-50 text-red-700 border-red-200 rounded-xl hover:bg-violet-900' },
-  { value: 'średni', label: 'Średni', class: 'bg-orange-50 text-orange-700 border-orange-200 rounded-xl hover:bg-violet-900' },
-  { value: 'niski', label: 'Niski', class: 'bg-gray-50 text-gray-600 border-gray-200 rounded-xl hover:bg-violet-900' }
-];
+const itemsPriority = computed(() => [
+  { value: 'wysoki', label: t('itTicketView.priorities.high'), class: 'bg-red-50 text-red-700 border-red-200 rounded-xl hover:bg-violet-900' },
+  { value: 'średni', label: t('itTicketView.priorities.medium'), class: 'bg-orange-50 text-orange-700 border-orange-200 rounded-xl hover:bg-violet-900' },
+  { value: 'niski', label: t('itTicketView.priorities.low'), class: 'bg-gray-50 text-gray-600 border-gray-200 rounded-xl hover:bg-violet-900' }
+]);
 
 const handleFetchError = (error) => {
-  showToast(`Błąd: ${error.response?.data?.message || error.message}`, 'error');
+  showToast(t('itTicketView.errorPrefix') + (error.response?.data?.message || error.message), 'error');
 };
+
+const priorityObject = computed({
+  get: () => itemsPriority.value.find(p => p.value === priority.value) || null,
+  set: (val) => {
+    priority.value = val?.value || val || '';
+  }
+});
 
 const fetchTicket = async (withLoading) => {
   try {
@@ -55,7 +64,7 @@ const fetchTicket = async (withLoading) => {
     handleFetchError(error);
   } finally {
     isLoading.value = false;
-    priority.value = ticket.value.priority ? ticket.value.priority.charAt(0).toUpperCase() + ticket.value.priority.slice(1) : '';
+    priority.value = ticket.value?.priority ? ticket.value.priority.toLowerCase() : ''
   }
 };
 
@@ -65,7 +74,7 @@ const changePriority = async (option_chosen) => {
       priority: option_chosen.value
     });
     await fetchTicket(false);
-    showToast('Pomyślnie zmieniono priorytet', 'success');
+    showToast(t('itTicketView.priorityChanged'), 'success');
   } catch (error) {
     handleFetchError(error);
   }
@@ -79,7 +88,7 @@ const assignToCurrentUser = async () => {
       assigned_it_id: currentUserId.value
     });
     await fetchTicket(false);
-    showToast('Przypisano zgłoszenie', 'success');
+    showToast(t('itTicketView.assigned'), 'success');
   } catch (error) {
     handleFetchError(error);
   }
@@ -87,7 +96,7 @@ const assignToCurrentUser = async () => {
 
 const removeFromCurrentUser = async () => {
   if (ticket.value?.assigned_to?.id !== currentUserId.value) {
-    showToast('Zgłoszenie nie należy do Ciebie!', 'error');
+    showToast(t('itTicketView.notOwnedError'), 'error');
     return;
   }
   try {
@@ -96,7 +105,7 @@ const removeFromCurrentUser = async () => {
       assigned_it_id: null
     });
     await fetchTicket(false);
-    showToast('Wypisano ze zgłoszenia', 'success');
+    showToast(t('itTicketView.unassigned'), 'success');
   } catch (error) {
     handleFetchError(error);
   }
@@ -109,7 +118,7 @@ const endTicket = async () => {
       status: 'zamknięte'
     });
     await fetchTicket(false);
-    showToast('Zgłoszenie zostało zamknięte', 'success');
+    showToast(t('itTicketView.ended'), 'success');
   } catch (error) {
     handleFetchError(error);
   }
@@ -152,15 +161,15 @@ onMounted(() => {
 
     <template #ticket-controls>
       <TicketControls
-        :ticket="ticket"
-        :currentUserId="currentUserId"
-        :isAdmin="currentUserRole !== 'user'"
-        :assignToCurrentUser="assignToCurrentUser"
-        :removeFromCurrentUser="removeFromCurrentUser"
-        :endTicket="endTicket"
-        :itemsPriority="itemsPriority"
-        v-model:priorityValue="priority"
-        @changePriority="changePriority"
+          :ticket="ticket"
+          :currentUserId="currentUserId"
+          :isAdmin="currentUserRole !== 'user'"
+          :assignToCurrentUser="assignToCurrentUser"
+          :removeFromCurrentUser="removeFromCurrentUser"
+          :endTicket="endTicket"
+          :itemsPriority="itemsPriority"
+          v-model:priorityValue="priorityObject"
+          @changePriority="changePriority"
       />
     </template>
 
@@ -173,12 +182,11 @@ onMounted(() => {
 
     <template #messages-screen>
       <TicketChat
-        :currentUserId="currentUserId"
-        :currentUserRole="currentUserRole"
-        :ticket="ticket"
+          :currentUserId="currentUserId"
+          :currentUserRole="currentUserRole"
+          :ticket="ticket"
       />
     </template>
 
   </TicketLayout>
 </template>
-

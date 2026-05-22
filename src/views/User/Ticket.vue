@@ -5,7 +5,9 @@ import { useAuthStore } from "../../stores/auth.js";
 import api from "../../utils/axios.js";
 import { useToast } from "../../composables/useToast.js";
 import { handleDeleteTicket } from "../../utils/ticket.js";
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const authStore = useAuthStore();
 const route = useRoute();
 const router = useRouter();
@@ -48,7 +50,8 @@ const fetchTicket = async () => {
 };
 
 const handleFetchError = (error) => {
-  showToast(`Błąd: ${error.response?.data?.message || error.message}`, 'error');
+  // Wiadomość z backendu może być po polsku, ale nasz prefix już jest w i18n
+  showToast(`${t('ticketDetailsView.errorPrefix')} ${error.response?.data?.message || error.message}`, 'error');
 };
 
 const handleEditTitle = async (newTitle) => {
@@ -58,7 +61,7 @@ const handleEditTitle = async (newTitle) => {
     });
     ticket.value.title = newTitle;
   } catch (error) {
-    showToast('Błąd podczas zapisywania tytułu', 'error');
+    showToast(t('ticketDetailsView.errorTitleSave'), 'error');
   }
 };
 
@@ -69,7 +72,7 @@ const handleEditDescription = async (newDescription) => {
     });
     ticket.value.description = newDescription;
   } catch (error) {
-    showToast('Błąd podczas zapisywania opisu', 'error');
+    showToast(t('ticketDetailsView.errorDescSave'), 'error');
   }
 };
 
@@ -87,7 +90,7 @@ onMounted(() => {
       :isLoading="isLoading"
       :canView="currentUserRole === 'user'"
       :hasTicket="ticket"
-      to="tickets"
+      to="/tickets"
   >
 
     <template #name-card>

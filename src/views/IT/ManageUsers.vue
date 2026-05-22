@@ -1,14 +1,16 @@
 <script setup>
-import {computed, onMounted, ref, watch} from 'vue';
-import {useAuthStore} from "../../stores/auth.js";
+import { computed, onMounted, ref, watch } from 'vue';
+import { useAuthStore } from "../../stores/auth.js";
 import api from "../../utils/axios.js";
-import {useToast} from "../../composables/useToast.js";
+import { useToast } from "../../composables/useToast.js";
 import ListLayout from "../../components/layouts/ListLayout.vue";
-import {formatDate} from "../../utils/ticket.js";
+import { formatDate } from "../../utils/ticket.js";
 import ListWithoutLinks from "../../components/molecules/ListWithoutLinks.vue";
-import {NoSymbolIcon, XCircleIcon, CheckCircleIcon} from "@heroicons/vue/24/outline"
+import { NoSymbolIcon, XCircleIcon, CheckCircleIcon } from "@heroicons/vue/24/outline"
 import BaseInput from "../../components/atoms/BaseInput.vue";
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const authStore = useAuthStore();
 const currentUserRole = computed(() => authStore.user?.role);
 const activeFilter = ref('all');
@@ -17,7 +19,7 @@ const usersList = ref([]);
 const adminPassword = ref('');
 const userToUnban = ref(null);
 const isLoading = ref(true);
-const {showToast} = useToast();
+const { showToast } = useToast();
 const searchQuery = ref("");
 
 const currentPage = ref(1);
@@ -32,13 +34,12 @@ const startUnbanProcess = (userId) => {
 };
 
 const handleFetchError = (error) => {
-  showToast(`Błąd: ${error.response?.data?.message || error.message}`, "error");
+  showToast(t('userManagement.errorPrefix') + (error.response?.data?.message || error.message), "error");
 };
 
 const loadUsers = async (page = 1, endpoint = currentEndpoint.value, useLoading = true) => {
   try {
     if (useLoading) isLoading.value = true;
-
     currentEndpoint.value = endpoint;
 
     const params = new URLSearchParams();
@@ -62,24 +63,16 @@ const loadUsers = async (page = 1, endpoint = currentEndpoint.value, useLoading 
 };
 
 const fetchUsers = () => loadUsers(1, '/api/users');
-
-const fetchBannedUsers = () => {
-  loadUsers(1, '/api/banned-users', false);
-
-}
-const fetchInactiveUsers = () => {
-  loadUsers(1, '/api/inactive-users', false);
-
-}
+const fetchBannedUsers = () => loadUsers(1, '/api/banned-users', false);
+const fetchInactiveUsers = () => loadUsers(1, '/api/inactive-users', false);
 
 const handleBanUser = async (userId, isBanned) => {
   const action = isBanned ? "unban" : "ban";
-
   let requestBody = {};
 
   if (isBanned) {
     if (!adminPassword.value) {
-      showToast('Wpisz swoje hasło aby odbanować', 'error')
+      showToast(t('userManagement.errors.passwordRequired'), 'error')
       return;
     }
     requestBody = { password: adminPassword.value };
@@ -89,7 +82,7 @@ const handleBanUser = async (userId, isBanned) => {
     await api.post(`/api/users/${userId}/${action}`, requestBody);
     await loadUsers(currentPage.value, currentEndpoint.value, false);
 
-    const message = isBanned ? "Odbanowano użytkownika" : "Pomyślnie zbanowano użytkownika";
+    const message = isBanned ? t('userManagement.success.unbanned') : t('userManagement.success.banned');
     showToast(message, "success");
     adminPassword.value = '';
     userToUnban.value = null;
@@ -102,23 +95,14 @@ const activateUser = async (userId) => {
   try {
     await api.post(`/api/users/${userId}/activate`);
     await loadUsers(currentPage.value, currentEndpoint.value, false);
-    showToast("Aktywowano użytkownika", "success");
+    showToast(t('userManagement.success.activated'), "success");
   } catch (error) {
     handleFetchError(error);
   }
 }
 
-const goToNextPage = () => {
-  if (currentPage.value < lastPage.value) {
-    loadUsers(currentPage.value + 1);
-  }
-};
-
-const goToPrevPage = () => {
-  if (currentPage.value > 1) {
-    loadUsers(currentPage.value - 1);
-  }
-};
+const goToNextPage = () => { if (currentPage.value < lastPage.value) loadUsers(currentPage.value + 1); };
+const goToPrevPage = () => { if (currentPage.value > 1) loadUsers(currentPage.value - 1); };
 
 const toggleFilter = (filterType) => {
   if (activeFilter.value === filterType) {
@@ -126,12 +110,8 @@ const toggleFilter = (filterType) => {
     fetchUsers();
   } else {
     activeFilter.value = filterType;
-
-    if (filterType === 'banned') {
-      fetchBannedUsers();
-    } else if (filterType === 'inactive') {
-      fetchInactiveUsers();
-    }
+    if (filterType === 'banned') fetchBannedUsers();
+    else if (filterType === 'inactive') fetchInactiveUsers();
   }
 };
 
@@ -145,28 +125,28 @@ onMounted(() => {
       :isLoading="isLoading"
       :hasItems="usersList && usersList.length > 0"
       :itemsLength="usersList ? usersList.length : 0"
-      emptyMessage="Brak użytkowników do wyświetlenia"
+      :emptyMessage="$t('userManagement.emptyMessage')"
       :canView="currentUserRole === 'admin'"
       :total="totalUsers"
       :current="currentPage"
       :last="lastPage"
-      paginateLabel="użytkowników"
+      :paginateLabel="$t('userManagement.paginateLabel')"
       @next-page="goToNextPage"
       @prev-page="goToPrevPage"
   >
     <template #action-button>
       <BaseButton class="w-full sm:w-auto justify-center">
-        <router-link to="/it/tickets" class="flex items-center justify-center h-full w-full">Wróć do ticketów</router-link>
+        <router-link to="/it/tickets" class="flex items-center justify-center h-full w-full">{{ $t('userManagement.backToTickets') }}</router-link>
       </BaseButton>
     </template>
 
     <template #toolbar>
       <div class="flex flex-col sm:flex-row gap-2 w-full">
         <BaseButton @click="toggleFilter('banned')" class="w-full sm:w-auto justify-center">
-          {{ activeFilter === 'banned' ? "Pokaż wszystkich" : "Pokaż zbanowanych" }}
+          {{ activeFilter === 'banned' ? $t("userManagement.filters.showAll") : $t("userManagement.filters.showBanned") }}
         </BaseButton>
         <BaseButton @click="toggleFilter('inactive')" class="w-full sm:w-auto justify-center">
-          {{ activeFilter === 'inactive' ? "Pokaż wszystkich" : "Aktywuj użytkowników" }}
+          {{ activeFilter === 'inactive' ? $t("userManagement.filters.showAll") : $t("userManagement.filters.activateUsers") }}
         </BaseButton>
       </div>
     </template>
@@ -177,11 +157,11 @@ onMounted(() => {
           <span class="font-bold text-lg break-words w-full sm:w-auto">{{ item.name }}</span>
 
           <div class="flex flex-row flex-wrap items-center gap-2 w-full sm:w-auto justify-end mt-1 sm:mt-0">
-            <ClearIconButton neutral title="Aktywny" v-if="item.active === true">
+            <ClearIconButton neutral :title="$t('userManagement.actions.active')" v-if="item.active === true">
               <CheckCircleIcon/>
             </ClearIconButton>
 
-            <ClearIconButton error title="Aktywuj użytkownika" v-else @click="activateUser(item.id)">
+            <ClearIconButton error :title="$t('userManagement.actions.activate')" v-else @click="activateUser(item.id)">
               <XCircleIcon/>
             </ClearIconButton>
 
@@ -193,25 +173,25 @@ onMounted(() => {
                     autocomplete="password"
                     v-model="adminPassword"
                     type="password"
-                    placeholder="Wpisz hasło..."
+                    :placeholder="$t('userManagement.placeholders.password')"
                     class="w-full min-w-[150px] text-sm"
                 />
               </div>
 
-              <ClearIconButton success @click="handleBanUser(item.id, item.ban)" title="Odbanuj" class="shrink-0">
+              <ClearIconButton success @click="handleBanUser(item.id, item.ban)" :title="$t('userManagement.actions.unban')" class="shrink-0">
                 <CheckCircleIcon/>
               </ClearIconButton>
 
-              <ClearIconButton error title="Anuluj" @click="[userToUnban = null, adminPassword = '']" class="shrink-0">
+              <ClearIconButton error :title="$t('userManagement.actions.cancel')" @click="[userToUnban = null, adminPassword = '']" class="shrink-0">
                 <XCircleIcon/>
               </ClearIconButton>
             </div>
 
-            <ClearIconButton v-else-if="item.ban === true" @click="startUnbanProcess(item.id)" error title="Odbanuj" class="shrink-0">
+            <ClearIconButton v-else-if="item.ban === true" @click="startUnbanProcess(item.id)" error :title="$t('userManagement.actions.unban')" class="shrink-0">
               <NoSymbolIcon/>
             </ClearIconButton>
 
-            <ClearIconButton v-else @click="handleBanUser(item.id, item.ban)" neutral title="Zbanuj" class="shrink-0">
+            <ClearIconButton v-else @click="handleBanUser(item.id, item.ban)" neutral :title="$t('userManagement.actions.ban')" class="shrink-0">
               <NoSymbolIcon/>
             </ClearIconButton>
           </div>

@@ -94,12 +94,12 @@ onUnmounted(() => {
 <template>
   <div v-if="canChat"
        class="flex shrink-0 text-lg md:text-xl w-full justify-center text-center px-4 py-2 text-gray-950 border-b border-gray-200 bg-violet-100">
-    Wiadomości z {{ receiverName}}
+    {{ $t('ticketChat.messagesWith') }} {{ receiverName }}
   </div>
 
   <div v-else
        class="flex shrink-0 text-lg md:text-xl w-full justify-center text-center px-4 py-2 text-gray-950 border-b border-gray-200 bg-violet-100">
-    Nie ma jeszcze przypisanego specjalisty it...
+    {{ $t('ticketChat.noItSpecialist') }}
   </div>
 
   <div ref="messagesContainer"
@@ -108,7 +108,7 @@ onUnmounted(() => {
     <div v-if="messages.length === 0" class="w-full h-full">
       <div class="flex flex-col items-center justify-center w-full h-full text-gray-500 gap-2">
         <ChatBubbleLeftIcon class="w-6 h-6"/>
-        <span>Brak wiadomości</span>
+        <span>{{ $t('ticketChat.noMessages') }}</span>
       </div>
     </div>
 
@@ -146,17 +146,17 @@ onUnmounted(() => {
         @keydown.enter.exact.prevent="sendMessage"
         @input="autoResize"
         rows="1"
-        placeholder="Napisz wiadomość... (Shift+Enter dla nowej linii)"
+        :placeholder="$t('ticketChat.placeholder')"
         class="flex-1 bg-gray-100 px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-300 transition resize-none overflow-hidden max-h-40 leading-relaxed"
         style="min-height: 44px;"
     ></textarea>
 
     <span v-else class="bg-gray-100 w-full px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-sm italic text-gray-500 text-center">
-      Nie jesteś przypisany do zadania i nie możesz wysyłać wiadomości
+      {{ $t('ticketChat.notAssignedWarning') }}
     </span>
 
     <BaseButton v-if="canChat" @click="sendMessage" class="shrink-0 mb-0.5">
-      Wyślij
+      {{ $t('ticketChat.send') }}
     </BaseButton>
   </div>
 </template>
