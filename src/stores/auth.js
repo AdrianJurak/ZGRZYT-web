@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import api from '../utils/axios.js';
 import { useToast } from '../composables/useToast.js';
-import i18n from '../i18n.js'; // Importujemy globalną instancję
+import i18n from '../i18n.js';
 
 const { showToast } = useToast();
 
@@ -13,26 +13,21 @@ export const useAuthStore = defineStore('auth', {
 
     actions: {
         async fetchUser() {
-            if (!localStorage.getItem('auth_token')) {
-                this.isInitialized = true;
-                return;
-            }
-
             try {
                 const response = await api.get('/api/user');
                 this.user = response.data;
             } catch (error) {
                 this.user = null;
-                localStorage.removeItem('auth_token');
-                //window.location.href = '/';
             } finally {
                 this.isInitialized = true;
             }
         },
 
         async login(credentials) {
-            const response = await api.post('/api/login', credentials);
-            localStorage.setItem('auth_token', response.data.access_token);
+            await api.get('/sanctum/csrf-cookie');
+
+            await api.post('/api/login', credentials);
+
             await this.fetchUser();
         },
 
@@ -40,7 +35,6 @@ export const useAuthStore = defineStore('auth', {
             try {
                 await api.post('/api/logout');
                 this.user = null;
-                localStorage.removeItem('auth_token');
             } catch (error) {
                 showToast(`${i18n.global.t('authStore.logoutError')}${error}`, 'error');
             } finally {
