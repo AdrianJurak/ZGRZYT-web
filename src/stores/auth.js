@@ -24,7 +24,7 @@ export const useAuthStore = defineStore('auth', {
             } catch (error) {
                 this.user = null;
                 localStorage.removeItem('auth_token');
-                window.location.href = '/';
+                //window.location.href = '/';
             } finally {
                 this.isInitialized = true;
             }
