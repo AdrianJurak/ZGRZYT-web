@@ -22,7 +22,7 @@ api.interceptors.response.use(
         const { t } = i18n.global;
 
         if (status === 401 && !url.includes('api/login') && !url.includes('api/request-account')) {
-            window.location.href = '/';
+            //window.location.href = '/';
             showToast(t('api.sessionExpired'), 'error');
         }
 
