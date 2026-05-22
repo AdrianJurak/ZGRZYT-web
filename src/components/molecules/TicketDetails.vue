@@ -33,7 +33,7 @@ const save = () => {
 
     <div v-if="!editDescription" class="flex flex-row items-start justify-between gap-2">
       <p class="text-sm md:text-base text-gray-700 font-bold break-words w-full">
-        Opis: <span class="text-gray-500 font-normal">{{ ticket.description }}</span>
+        {{ $t('ticketDetails.descriptionLabel') }} <span class="text-gray-500 font-normal">{{ ticket.description }}</span>
       </p>
 
       <button  v-if="currentUserRole === 'user' && ticket.user_id === currentUserId"
@@ -57,26 +57,26 @@ const save = () => {
       <div class="flex flex-row gap-2 w-full sm:w-auto shrink-0">
         <button @click="save"
                 class="flex-1 sm:flex-none px-4 py-2 bg-violet-700 text-white font-semibold rounded-lg hover:bg-violet-800 transition duration-150 shadow-sm">
-          Zatwierdź
+          {{ $t('ticketDetails.confirm') }}
         </button>
 
         <button @click="toggleDescription()"
                 class="flex-1 sm:flex-none px-4 py-2 bg-white border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-red-50 transition duration-150 shadow-sm">
-          Anuluj
+          {{ $t('ticketDetails.cancel') }}
         </button>
       </div>
     </div>
 
     <p class="text-sm md:text-base font-bold text-gray-700">
-      Zgłaszający: <span class="text-gray-500 font-normal">{{ ticket.user.name }}</span>
+      {{ $t('ticketDetails.reporterLabel') }} <span class="text-gray-500 font-normal">{{ ticket.user.name }}</span>
     </p>
 
     <p class="text-sm md:text-base text-gray-700 font-bold">
-      Przypisane do:
+      {{ $t('ticketDetails.assignedToLabel') }}
       <span v-if="ticket.assigned_to" class="text-gray-500 font-normal">
         {{ ticket.assigned_to.name }}
       </span>
-      <span v-else class="text-gray-500 font-normal">Nikogo</span>
+      <span v-else class="text-gray-500 font-normal">{{ $t('ticketDetails.unassigned') }}</span>
     </p>
 
   </div>

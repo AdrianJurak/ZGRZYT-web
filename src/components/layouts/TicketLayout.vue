@@ -13,14 +13,14 @@ defineProps({
 <template>
   <div v-if="canView" class="h-screen bg-gray-50 flex flex-col font-sans text-gray-900 overflow-hidden">
 
-    <div class="flex justify-start px-3 md:px-0 mt-2 md:mt-4 mx-auto w-full max-w-6xl">
+    <div class="flex justify-start px-3 md:px-0 mx-auto w-full max-w-6xl">
       <BackButton :to="to"></BackButton>
     </div>
 
-    <Loading v-if="isLoading" text="Ładowanie zgłoszenia"></Loading>
+    <Loading v-if="isLoading" :text="$t('ticketLayout.loadingText')"></Loading>
 
     <main v-else-if="hasTicket"
-          class="custom-scroll grow flex flex-col max-w-6xl mx-2 md:mx-auto w-auto md:w-full mt-2 md:mt-4 bg-white rounded-xl shadow-sm border border-gray-200 overflow-auto mb-2 md:mb-0">
+          class="custom-scroll grow flex flex-col max-w-6xl mx-2 md:mx-auto w-auto md:w-full mt-1 md:mt-2 bg-white rounded-xl shadow-sm border border-gray-200 overflow-auto mb-2 md:mb-0">
 
       <div class="flex flex-col md:flex-row md:justify-between md:items-center shrink-0 gap-3 md:gap-6 px-4 md:px-6 py-4 border-b border-gray-100">
         <slot name="name-card"></slot>

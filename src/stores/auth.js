@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import api from '../utils/axios.js';
 import { useToast } from '../composables/useToast.js';
+import i18n from '../i18n.js'; // Importujemy globalną instancję
 
 const { showToast } = useToast();
 
@@ -41,7 +42,7 @@ export const useAuthStore = defineStore('auth', {
                 this.user = null;
                 localStorage.removeItem('auth_token');
             } catch (error) {
-                showToast(`Wystąpił błąd przy wylogowywaniu. ${error}`, 'error');
+                showToast(`${i18n.global.t('authStore.logoutError')}${error}`, 'error');
             } finally {
                 window.location.href = '/';
             }

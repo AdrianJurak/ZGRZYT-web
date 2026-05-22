@@ -22,14 +22,14 @@ const changeSorting = (option) => {
 </script>
 
 <template>
-  <div class="flex flex-col sm:flex-row gap-2 sm:gap-3 items-stretch sm:items-center w-full">
+  <div class="flex flex-col sm:flex-row gap-2 sm:gap-3 items-stretch sm:items-center w-full xl:w-auto">
 
-    <div class="h-12 flex flex-row items-center gap-2 w-full sm:max-w-sm">
+    <div class="h-12 flex flex-row items-center gap-2 w-full sm:w-3/5 xl:w-auto xl:max-w-sm">
       <div class="flex-1 w-full">
         <BaseInput
             id="search"
             type="text"
-            placeholder="Szukaj..."
+            :placeholder="$t('toolbar.placeholderSearch')"
             v-model="searchQuery"
             @keyup.enter="emit('search')"
             class="w-full"
@@ -41,7 +41,7 @@ const changeSorting = (option) => {
       </BaseButton>
     </div>
 
-    <div class="flex flex-row gap-2 items-center w-full sm:w-auto">
+    <div class="flex flex-row gap-2 items-center w-full sm:w-2/5 xl:w-auto">
 
       <USelectMenu
           @update:model-value="changeSorting"
@@ -50,8 +50,8 @@ const changeSorting = (option) => {
             item: ['px-4 py-2 text-white text-center transition duration-50 data-highlighted:not-data-disabled:bg-violet-700'],
             base: ['!justify-center', '!h-12', '!flex', '!items-center']
           }"
-          class="flex-1 sm:flex-none h-12 sm:w-48 text-base text-center font-bold bg-violet-900 rounded-xl transition duration-150 hover:bg-violet-700 text-white"
-          :search-input="false" v-model="sortByValue" placeholder="Sortuj po..." :items="itemsSorting"
+          class="flex-1 xl:flex-none h-12 xl:w-48 text-base text-center font-bold bg-violet-900 rounded-xl transition duration-150 hover:bg-violet-700 text-white"
+          :search-input="false" v-model="sortByValue" :placeholder="$t('toolbar.placeholderSort')" :items="itemsSorting"
       >
       </USelectMenu>
 

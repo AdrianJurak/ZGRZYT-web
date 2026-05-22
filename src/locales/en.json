@@ -1,0 +1,286 @@
+{
+  "requestAccount": {
+    "successMessage": "Account request created. Awaiting administrator approval",
+    "errorPrefix": "Error: ",
+    "defaultError": "Failed to submit request",
+    "title": "Request an account",
+    "backToLogin": "Back to login screen",
+    "labels": {
+      "name": "Name",
+      "login": "Login",
+      "email": "E-mail",
+      "password": "Password",
+      "passwordConfirm": "Confirm password"
+    },
+    "placeholders": {
+      "name": "John Doe",
+      "login": "jDoe",
+      "email": "example{'@'}email.com",
+      "password": "password",
+      "passwordConfirm": "enter password..."
+    },
+    "submitButton": "Create request"
+  },
+
+  "login": {
+    "title": "Welcome back",
+    "subtitle": "Sign in",
+    "labels": {
+      "username": "Username",
+      "password": "Password"
+    },
+    "placeholders": {
+      "username": "enter your username..."
+    },
+    "buttons": {
+      "submit": "Sign in",
+      "loading": "Signing in..."
+    },
+    "links": {
+      "noAccount": "Don't have an account yet? ->"
+    },
+    "validation": {
+      "empty": "Please fill in username and password."
+    },
+    "error": {
+      "default": "Login failed"
+    }
+  },
+
+  "userTickets": {
+    "emptyMessage": "No tickets available",
+    "paginateLabel": "tickets",
+    "createTicket": "Create Ticket"
+  },
+
+  "ticketDetailsView": {
+    "errorPrefix": "Error:",
+    "errorTitleSave": "Error saving title",
+    "errorDescSave": "Error saving description"
+  },
+
+  "createTicket": {
+    "title": "Create a ticket",
+    "labels": {
+      "title": "Describe your problem shortly",
+      "description": "Explain in more detail what the problem is"
+    },
+    "placeholders": {
+      "title": "Printer is not workin...",
+      "description": "Printer in the room 101 has a red blinking light."
+    },
+    "priorities": {
+      "niskie": "Low",
+      "średnie": "Medium",
+      "wysokie": "High"
+    },
+    "success": "Ticket created!",
+    "errorPrefix": "Error:",
+    "submitButton": "Create a ticket"
+  },
+
+  "itTicketList": {
+    "assignSuccess": "Ticket assigned successfully!",
+    "assignError": "Failed to assign",
+    "emptyMessage": "No tickets",
+    "paginateLabel": "tickets",
+    "createUser": "Create User",
+    "manageUsers": "Manage Users",
+    "showAll": "Show all",
+    "showUnassigned": "Show unassigned",
+    "assignPlaceholder": "Assign employee...",
+    "assignedTo": "Assigned to:",
+    "notAssigned": "Not assigned to any task"
+  },
+
+  "itTicketView": {
+    "errorPrefix": "Error: ",
+    "priorityChanged": "Priority changed successfully",
+    "assigned": "Ticket assigned",
+    "unassigned": "Unassigned from ticket",
+    "ended": "Ticket closed",
+    "notOwnedError": "Ticket does not belong to you!",
+    "priorities": {
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low"
+    }
+  },
+
+  "userManagement": {
+    "errorPrefix": "Error: ",
+    "emptyMessage": "No users to display",
+    "paginateLabel": "users",
+    "backToTickets": "Back to tickets",
+    "errors": { "passwordRequired": "Enter your password to unban" },
+    "success": {
+      "unbanned": "User unbanned",
+      "banned": "User successfully banned",
+      "activated": "User activated"
+    },
+    "filters": {
+      "showAll": "Show all",
+      "showBanned": "Show banned",
+      "activateUsers": "Activate users"
+    },
+    "actions": {
+      "active": "Active",
+      "activate": "Activate user",
+      "unban": "Unban",
+      "ban": "Ban",
+      "cancel": "Cancel"
+    },
+    "placeholders": { "password": "Enter password..." }
+  },
+
+  "createUser": {
+    "title": "Create user",
+    "labels": {
+      "name": "Name",
+      "login": "Login",
+      "email": "E-mail",
+      "password": "Password",
+      "passwordConfirm": "Confirm password"
+    },
+    "placeholders": {
+      "name": "John Doe",
+      "login": "jDoe",
+      "email": "example{'@'}email.com",
+      "password": "password",
+      "passwordConfirm": "enter password..."
+    },
+    "roles": {
+      "user": "User",
+      "it": "IT",
+      "admin": "Administrator"
+    },
+    "success": "User created.",
+    "errorPrefix": "Error: ",
+    "submitButton": "Create user"
+  },
+
+  "ticketUtils": {
+    "deletePermissionError": "You do not have permission to delete this ticket",
+    "deleteConfirm": "Are you sure you want to delete this ticket?",
+    "deleteSuccess": "Deleted successfully",
+    "deleteError": "Could not delete: "
+  },
+
+  "fetchError": {
+    "prefix": "Error: "
+  },
+
+  "api": {
+    "sessionExpired": "Session expired!",
+    "invalidData": "Invalid data",
+    "errorPrefix": "Error: "
+  },
+
+  "authStore": {
+    "logoutError": "An error occurred while logging out. "
+  },
+
+  "ticketListComposable": {
+    "errorPrefix": "Error: ",
+    "sort": {
+      "createdAt": "Creation date",
+      "title": "Title",
+      "status": "Status",
+      "priority": "Priority"
+    }
+  },
+
+  "toolbar": {
+    "placeholderSearch": "Search...",
+    "placeholderSort": "Sort by..."
+  },
+
+  "ticketNameCard": {
+    "confirm": "Confirm",
+    "cancel": "Cancel"
+  },
+
+  "ticketDetails": {
+    "descriptionLabel": "Description:",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "reporterLabel": "Reporter:",
+    "assignedToLabel": "Assigned to:",
+    "unassigned": "None"
+  },
+
+  "ticketControls": {
+    "assignToMe": "Assign to me",
+    "removeFromMe": "Unassign me",
+    "assignedTo": "Assigned to:",
+    "changePriorityPlaceholder": "Change status",
+    "endTask": "End task"
+  },
+
+  "ticketChat": {
+    "messagesWith": "Messages with",
+    "noItSpecialist": "No IT specialist assigned yet...",
+    "noMessages": "No messages",
+    "placeholder": "Type a message... (Shift+Enter for new line)",
+    "notAssignedWarning": "You are not assigned to this task and cannot send messages",
+    "send": "Send"
+  },
+
+  "pagination": {
+    "found": "Found:",
+    "your": "of your",
+    "page": "Page",
+    "of": "of",
+    "prev": "Previous",
+    "next": "Next"
+  },
+
+  "ticketLayout": {
+    "loadingText": "Loading ticket"
+  },
+
+  "listLayout": {
+    "unauthorized": "You're not supposed to be here."
+  },
+
+  "footer": {
+    "allRightsReserved": "All rights reserved."
+  },
+
+  "backButton": {
+    "defaultText": "Back to list"
+  },
+
+  "statuses": {
+    "nowe": "New",
+    "w trakcie": "In progress",
+    "zamknięte": "Closed"
+  },
+  "priorities": {
+    "wysoki": "High",
+    "średni": "Medium",
+    "niski": "Low"
+  },
+
+  "formLayout": {
+    "unauthorized": "You're not supposed to be here."
+  },
+
+  "loading": {
+    "defaultText": "Loading data..."
+  },
+
+  "tickets": {
+    "sort": {
+      "createdAt": "Creation date",
+      "priority": "Priority",
+      "status": "Status",
+      "title": "Title"
+    }
+  },
+
+  "navbar": {
+    "logoutConfirm": "Are you sure you want to log out?",
+    "logout": "Log out"
+  }
+}

@@ -4,7 +4,9 @@ import api from '../utils/axios.js';
 import { useRouter } from 'vue-router';
 import BaseInput from '../components/atoms/BaseInput.vue';
 import { useToast } from '../composables/useToast.js';
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const isLoading = ref(false);
 const router = useRouter();
 const { showToast } = useToast();
@@ -30,40 +32,41 @@ const createUser = async () => {
     });
 
     if (response.status === 201 || response.status === 200) {
-      showToast('Utworzono zgłoszenie. Oczekuje na akceptację przez administratora', 'success');
+      showToast(t('requestAccount.successMessage'), 'success');
     }
 
     await router.push('/');
   } catch (error) {
-    showToast(`Błąd: ${error.response?.data?.message || 'Nie udało się wysłać zgłoszenia'}`, 'error');
+    const apiError = error.response?.data?.message || t('requestAccount.defaultError');
+    showToast(`${t('requestAccount.errorPrefix')}${apiError}`, 'error');
   } finally {
     isLoading.value = false;
   }
 };
 </script>
+
 <template>
   <FormLayout :canView="true"
               backTo="/"
-              title="Poproś o utworzenie konta"
-              label="Wróc do ekranu logowania">
+              :title="$t('requestAccount.title')"
+              :label="$t('requestAccount.backToLogin')">
 
     <template #inputs>
-      <BaseInput id="name" label="Imię" autocomplete="name" v-model="name" type="text" placeholder="Jan Kowalski"/>
+      <BaseInput id="name" :label="$t('requestAccount.labels.name')" autocomplete="name" v-model="name" type="text" :placeholder="$t('requestAccount.placeholders.name')"/>
 
-      <BaseInput id="login" label="Login" autocomplete="username" v-model="login" type="text" placeholder="jKowalski"/>
+      <BaseInput id="login" :label="$t('requestAccount.labels.login')" autocomplete="username" v-model="login" type="text" :placeholder="$t('requestAccount.placeholders.login')"/>
 
-      <BaseInput id="email" label="E-mail" autocomplete="email" v-model="email" type="email" placeholder="example@email.com"/>
+      <BaseInput id="email" :label="$t('requestAccount.labels.email')" autocomplete="email" v-model="email" type="email" :placeholder="$t('requestAccount.placeholders.email')"/>
 
-      <BaseInput id="password" label="Hasło" autocomplete="password" v-model="password" type="password" placeholder="hasło"/>
+      <BaseInput id="password" :label="$t('requestAccount.labels.password')" autocomplete="password" v-model="password" type="password" :placeholder="$t('requestAccount.placeholders.password')"/>
 
-      <BaseInput id="passwordConfirm" label="Potwierdź hasło" v-model="passwordConfirm" type="password" placeholder="wpisz hasło..."/>
+      <BaseInput id="passwordConfirm" :label="$t('requestAccount.labels.passwordConfirm')" v-model="passwordConfirm" type="password" :placeholder="$t('requestAccount.placeholders.passwordConfirm')"/>
 
       <FormButton
           @click="createUser"
           :isLoadingState="isLoading"
-          mainText="Stwórz zgłoszenie"/>
+          :mainText="$t('requestAccount.submitButton')"/>
     </template>
 
   </FormLayout>
 </template>
-

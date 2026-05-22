@@ -1,6 +1,7 @@
 import api from '../utils/axios.js';
 import { ref } from 'vue';
 import { useToast } from './useToast.js';
+import i18n from '../i18n.js';
 
 const { showToast } = useToast();
 
@@ -26,7 +27,7 @@ export function useTicketList() {
             params.append('search', searchQuery.value.trim());
         }
 
-        params.append('sort_by', sortBy.value);
+        params.append('sort_by', sortBy.value || '');
         params.append('sort_direction', sortDesc.value ? 'desc' : 'asc');
         params.append('page', page);
         params.append('unassigned', unassigned.value);
@@ -41,7 +42,8 @@ export function useTicketList() {
             lastPage.value = data.last_page || 1;
             totalTickets.value = data.total || 0;
         } catch (error) {
-            showToast(`Błąd: ${error.response?.data?.message || error.message}`, 'error');
+            const errorPrefix = i18n.global.t('ticketListComposable.errorPrefix');
+            showToast(`${errorPrefix}${error.response?.data?.message || error.message}`, 'error');
         } finally {
             isLoading.value = false;
         }
@@ -60,14 +62,14 @@ export function useTicketList() {
     };
 
     return {
-        sortDesc, searchQuery, sortBy, currentPage, lastPage, totalTickets,unassigned,noPagination,
+        sortDesc, searchQuery, sortBy, currentPage, lastPage, totalTickets, unassigned, noPagination,
         errorMessage, isLoading, tickets, fetchTickets, goToNextPage, goToPrevPage
     };
 }
 
 export const itemsSorting = [
-    { value: 'created_at', label: 'Data utworzenia' },
-    { value: 'title', label: 'Tytuł' },
-    { value: 'status', label: 'Status' },
-    { value: 'priority', label: 'Priorytet' },
+    { value: 'created_at', get label() { return i18n.global.t('ticketListComposable.sort.createdAt'); } },
+    { value: 'title', get label() { return i18n.global.t('ticketListComposable.sort.title'); } },
+    { value: 'status', get label() { return i18n.global.t('ticketListComposable.sort.status'); } },
+    { value: 'priority', get label() { return i18n.global.t('ticketListComposable.sort.priority'); } },
 ];
