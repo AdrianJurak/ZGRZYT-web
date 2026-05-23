@@ -2,11 +2,11 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://zgrzyt-stolen-api.onrender.com/api/$1"
+      "destination": "https://zgrzyt-api.onrender.com/api/$1"
     },
     {
       "source": "/sanctum/(.*)",
-      "destination": "https://zgrzyt-stolen-api.onrender.com/sanctum/$1"
+      "destination": "https://zgrzyt-api.onrender.com/sanctum/$1"
     },
     {
       "source": "/(.*)",
