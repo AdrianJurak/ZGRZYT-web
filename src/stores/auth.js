@@ -26,7 +26,6 @@ export const useAuthStore = defineStore('auth', {
 
         async login(credentials) {
             await axios.get('/sanctum/csrf-cookie', {
-                baseURL: 'https://zgrzyt-web.vercel.app'
             });
 
             await api.post('/api/login', credentials);
