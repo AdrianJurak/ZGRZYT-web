@@ -17,6 +17,7 @@ export const useAuthStore = defineStore('auth', {
                 const response = await api.get('/api/user');
                 this.user = response.data;
             } catch (error) {
+                console.log("DEBUG ERROR:", error.response?.data);
                 this.user = null;
             } finally {
                 this.isInitialized = true;
