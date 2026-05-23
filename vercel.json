@@ -1,16 +1,12 @@
 {
   "rewrites": [
     {
-      "source": "/api/(.*)",
-      "destination": "https://zgrzyt-stolen-api.onrender.com/api/$1"
+      "source": "/api/:path*",
+      "destination": "https://zgrzyt-stolen-api.onrender.com/api/:path*"
     },
     {
-      "source": "/sanctum/csrf-cookie",
-      "destination": "https://zgrzyt-stolen-api.onrender.com/sanctum/csrf-cookie"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "source": "/sanctum/:path*",
+      "destination": "https://zgrzyt-stolen-api.onrender.com/sanctum/:path*"
     }
   ]
 }
